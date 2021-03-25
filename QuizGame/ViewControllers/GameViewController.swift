@@ -18,8 +18,9 @@ class GameViewController: UIViewController {
     @IBOutlet weak var answerButton2: UIButton!
     @IBOutlet weak var answerButton3: UIButton!
     @IBOutlet weak var answerButton4: UIButton!
+    @IBOutlet weak var questionNumber: UILabel!
     
-    var quizLogic = QuizLogic()
+    var quizLogic = QuizLogic(Game.shared.isRandom)
     weak var gameDelegate: GameDelegate?
     weak var gameVCDelegate: GameViewControllerDelegate?
     
@@ -28,6 +29,18 @@ class GameViewController: UIViewController {
         gameDelegate?.setNumOfQuestions(quizLogic.quiz.count)
         quizLogic.gameDelegate = gameDelegate
         setupUI()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        quizLogic.questionNumb.addObserver(self, options: [.new, .initial], closure: { [weak self] (questionNumb, _) in
+            self?.questionNumber.text = "Вопрос №\(String(questionNumb+1))"
+        })
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(false)
+        quizLogic.questionNumb.removeObserver(self)
     }
     
     @IBAction func answerButtonPressed(_ sender: UIButton) {
